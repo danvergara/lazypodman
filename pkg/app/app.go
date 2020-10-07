@@ -18,7 +18,17 @@ type App struct {
 func NewApp(config *config.Config, composeFile string) (*App, error) {
 	app := &App{Config: config}
 	app.Log = logger.NewLogger(config)
-	app.Gui = gui.NewGui(composeFile)
+
+	projectName, err := config.ProjectName()
+	if err != nil {
+		return nil, err
+	}
+
+	app.Gui, err = gui.NewGui(composeFile, projectName)
+	if err != nil {
+		return nil, err
+	}
+
 	return app, nil
 
 }

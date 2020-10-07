@@ -14,14 +14,15 @@ import (
 
 // Gui wrapes the gocui object which handles rendering and events
 type Gui struct {
-	g             *gocui.Gui
-	Errors        SentinelErrors
-	Log           *logrus.Entry
-	PodmanBinding *podman.Podman
-	State         guiState
 	CyclableViews []string
-	SubProcess    *exec.Cmd
+	Errors        SentinelErrors
+	g             *gocui.Gui
+	Log           *logrus.Entry
 	OSCommand     *commands.OSCommand
+	PodmanBinding *podman.Podman
+	ProjectName   string
+	State         guiState
+	SubProcess    *exec.Cmd
 }
 
 type servicePanelState struct {
@@ -91,7 +92,7 @@ type SentinelErrors struct {
 }
 
 // NewGui returns a new Gui object
-func NewGui(composeFile string) *Gui {
+func NewGui(composeFile, projectName string) (*Gui, error) {
 	initalState := guiState{
 		Panels: &panelState{
 			Pods:       &podPanelState{SelectedLine: -1},
@@ -111,13 +112,14 @@ func NewGui(composeFile string) *Gui {
 		PodmanBinding: &podman.Podman{
 			ComposeFile: composeFile,
 		},
+		ProjectName:   projectName,
 		State:         initalState,
 		CyclableViews: []string{"project", "pod", "containers", "images", "volumes"},
 	}
 
 	gui.GenerateSentinelErrors()
 
-	return gui
+	return gui, nil
 }
 
 // GenerateSentinelErrors makes the sentinel errors for the gui. We're defining it here
