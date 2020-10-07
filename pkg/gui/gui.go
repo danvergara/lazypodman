@@ -160,6 +160,7 @@ func (gui *Gui) Run() error {
 
 	go func() {
 		gui.goEvery(time.Microsecond*30, gui.refreshContainersView)
+		gui.goEvery(time.Microsecond*30, gui.refreshProjectView)
 		gui.goEvery(time.Microsecond*30, gui.refreshPodsView)
 		gui.goEvery(time.Microsecond*30, gui.refreshImagesView)
 		gui.goEvery(time.Microsecond*30, gui.refreshVolumesView)
@@ -176,6 +177,7 @@ func (gui *Gui) goEvery(interval time.Duration, function func() error) {
 
 	// time.Tick doesn't run inmediately so we'll do that here
 	_ = function()
+
 	go func() {
 		ticker := time.NewTicker(interval)
 		defer ticker.Stop()
